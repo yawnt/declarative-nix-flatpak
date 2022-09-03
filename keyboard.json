@@ -1,0 +1,14 @@
+{
+  "name": "Keyboard",
+  "idmatcher": "Keyboard",
+  "mapping": 
+  {
+    "Volume Up": "up",
+    "Volume Down": "down",
+    "Forward": "right",
+    "Back": "left",
+    "Return": "enter",
+    "Media Play": "play_pause",
+    "Keyboard Menu": { "short": "back", "long": "debug" }
+  }
+}
