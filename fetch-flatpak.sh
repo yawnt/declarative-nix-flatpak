@@ -4,9 +4,6 @@ set -x
 
 export FLATPAK_DIR="$HOME/.local/share/flatpak"
 
-# Sad, just because otherwise we cannot install h264 :(
-mkdir -p /sys/{block,bus,class,dev,devices}
-
 mkdir -p ${FLATPAK_DIR}
 mkdir -p $out
 
