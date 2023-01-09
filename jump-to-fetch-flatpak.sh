@@ -2,16 +2,28 @@ source $stdenv/setup
 
 set -x 
 
-export FLATPAK_DIR="$HOME/.local/share/flatpak"
+# this is very sad, but for some weird reason bwrap (which flatpak runs)
+# requires these /sys files to be present. i refuse to relax the sandbox,
+# so here we go :(
+export WRITABLEROOT=$(mktemp -d)
+mkdir -p $WRITABLEROOT/sys/{block,bus,class,dev,devices}
+
+export XDG_DATA_HOME=$(mktemp -d)
 
 rarray=($runtime)
-bwrapargs="--dir /sys/block --dir /sys/bus --dir /sys/class --dir /sys/dev --dir /sys/devices"
+bwrapargs=""
 for i in "${rarray[@]}"
 do
-  d=$i/*
+  d=($i/*)
   base=$(basename $d)
-  bwrapargs="$bwrapargs --ro-bind $d ${FLATPAK_DIR}/runtime/$base"
+  bwrapargs="$bwrapargs --ro-bind $d ${XDG_DATA_HOME}/flatpak/runtime/$base"
 done
 
-bwrap --dev-bind / / $bwrapargs bash $fetcher
+bwrap \
+  --bind $WRITABLEROOT / \
+  --bind /bin /bin --bind /build /build --dev-bind /dev /dev \
+  --bind /etc /etc --bind /nix /nix --bind /proc /proc --bind /tmp /tmp \
+  $bwrapargs \
+  bash $fetcher
+
 
